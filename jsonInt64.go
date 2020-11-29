@@ -9,23 +9,23 @@ import (
 	"strconv"
 )
 
-type JSONInt struct {
-	JsonValue int
+type JSONInt64 struct {
+	JsonValue int64
 	JSONValidation
 }
 
-func (j JSONInt) Value() (value driver.Value, err error) {
+func (j JSONInt64) Value() (value driver.Value, err error) {
 	value = int64(j.JsonValue)
 	return
 }
 
-func (j *JSONInt) Scan(src interface{}) (err error) {
+func (j *JSONInt64) Scan(src interface{}) (err error) {
 	var sv reflect.Value
 	sv = reflect.ValueOf(src)
 
 	switch {
-	case sv.Kind() == reflect.Int:
-		val, ok := src.(int)
+	case sv.Kind() == reflect.Int64:
+		val, ok := src.(int64)
 		if !ok {
 			err = errors.New("unable to scan")
 			return
@@ -41,9 +41,8 @@ func (j *JSONInt) Scan(src interface{}) (err error) {
 			return
 		}
 
-		var i int
-		// i64, err = strconv.ParseInt(string(val), 10, 32)
-		i, err = strconv.Atoi(string(val))
+		var i64 int64
+		i64, err = strconv.ParseInt(string(val), 10, 64)
 		if err != nil {
 			log.WithFields(
 				log.Fields{
@@ -52,7 +51,7 @@ func (j *JSONInt) Scan(src interface{}) (err error) {
 			return
 		}
 
-		j.JsonValue = i
+		j.JsonValue = i64
 		return
 
 	case sv.Kind() == reflect.Slice:
@@ -66,9 +65,8 @@ func (j *JSONInt) Scan(src interface{}) (err error) {
 				return
 			}
 
-			var intint int
-			intint, err = strconv.Atoi(string(val))
-			// i, err = strconv.ParseInt(string(val), 10, 64)
+			var i64 int64
+			i64, err = strconv.ParseInt(string(val), 10, 64)
 			if err != nil {
 				log.WithFields(
 					log.Fields{
@@ -77,7 +75,7 @@ func (j *JSONInt) Scan(src interface{}) (err error) {
 				return
 			}
 
-			j.JsonValue = intint
+			j.JsonValue = i64
 
 		}
 	}
@@ -85,11 +83,11 @@ func (j *JSONInt) Scan(src interface{}) (err error) {
 	return
 }
 
-func (j JSONInt) MarshalJSON() ([]byte, error) {
+func (j JSONInt64) MarshalJSON() ([]byte, error) {
 	return json.Marshal(j.JsonValue)
 }
 
-func (j *JSONInt) UnmarshalJSON(data []byte) (err error) {
+func (j *JSONInt64) UnmarshalJSON(data []byte) (err error) {
 
 	j.Set = true // unmarshalled, so the key was set
 
@@ -98,7 +96,7 @@ func (j *JSONInt) UnmarshalJSON(data []byte) (err error) {
 		return
 	}
 
-	var value int
+	var value int64
 	if err = json.Unmarshal(data, &value); err != nil {
 		return
 	}
@@ -107,7 +105,7 @@ func (j *JSONInt) UnmarshalJSON(data []byte) (err error) {
 	return
 }
 
-func (j *JSONInt) isSet() bool {
+func (j *JSONInt64) isSet() bool {
 	if j.Set == true {
 		return true
 	}
